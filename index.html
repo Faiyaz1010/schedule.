@@ -1,454 +1,380 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule for Project Task</title>
-    <style>
-         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 10px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Task Schedule</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f7fa;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #2a3f54;
+    }
+    .container, form, table {
+      max-width: 1200px;
+      margin: auto;
+      margin-bottom: 30px;
+    }
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    form input, form button {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      flex: 1;
+    }
+    form button {
+      background: #2a9d8f;
+      color: white;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #21867a;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+    }
+    th[colspan] {
+      background-color: #2a9d8f;
+      color: white;
+    }
+    thead {
+      background-color: #264653;
+      color: white;
+    }
+    textarea {
+      width: 100%;
+      resize: none;
+    }
+    button.delete, .deleteRow, .deleteBtn {
+      background: #e76f51;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button.delete:hover {
+      background: #d45a3f;
+    }
+    #addRow, #saveData, #exportExcel, #printPage, #toggleMode, #lockUnlock {
+      margin: 10px 5px;
+      padding: 10px 15px;
+      background: #457b9d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #addRow:hover, #saveData:hover, #exportExcel:hover, #printPage:hover {
+      background: #3a6680;
+    }
+    .colorPickerContainer {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    /* Dark Mode */
+    body.dark-mode {
+      background: #1e1e1e;
+      color: #ccc;
+    }
+    body.dark-mode table {
+      background: #2c2c2c;
+    }
+    body.dark-mode th {
+      background: #444 !important;
+    }
+    body.dark-mode input,
+    body.dark-mode textarea {
+      background: #333;
+      color: white;
+      border-color: #666;
+    }
+    @media (max-width: 768px) {
+      form {
+        flex-direction: column;
+      }
+    }
 
-        .containar {
-            max-width: 400px;
-            /* margin: 0 auto; */
-            background-color: #fff;
-            padding: 20px;
-            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
-            border-radius: 8px;
-            margin-left: 2;
-        }
-
-        h1, h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            padding: 5px;
-            margin-bottom: 2px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-
-        }
-
-        button {
-            padding: 10px;
-            background-color: #c24343b5;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        table {
-            width: 20%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background-color: #6595c9;
-            color: white;
-        }
-
-        th, td {
-            padding: 1px;
-            border: 1px solid #ccc;
-            text-align: left;
-           
-        }
-
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 5px;
-        }
-
-        .container {
-            max-width: 2400px;
-            margin: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
-
-        table, th, td {
-            border: 2px solid #644c56;
-            /* width: 200px; */
-        }
-
-        th, td {
-            padding: 5px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #dab1b1;
-        }
-
-        button {
-            margin-right: 10px;
-        }
-
-        .deleteRow {
-            background-color: #a3e532;
-            color: rgb(240, 43, 8);
-            border: none;
-            padding: 4px 4px;
-            cursor: pointer;
-        }
-
-    </style>
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #taskTable, #taskTable * {
+        visibility: visible;
+      }
+      #taskTable {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      #taskTable tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    }
+  </style>
 </head>
 <body>
-     <h1 style="color:rgb(121, 64, 181);display: flex;">Project Task</h1>
-    <div class="containar">
-        <form id="scheduleForm">
-            <label for="projectName">Project Name:</label>
-            <input type="text" id="projectName" name="projectName" placeholder="project name" required>
-    
-            <label for="place">Place:</label>
-            <input type="text" id="place" name="place" placeholder="place" required>
-    
-            <button  style="background:rgb(88, 137, 159) ;width: 100%;" type="submit">Save Project</button>
-        </form>
-    
-        <table id="projectsTable">
-            <thead>
-                <tr>
-                    <th>Project Name</th>
-                    <th>Place</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Saved projects will appear here -->
-            </tbody>
-        </table>
-    </div>
-        <table id="taskTable">
-            <thead>
-                <tr id="headerRow1">
-                    <th>Task Name</th>
-                    <th>Project Leader</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Duration</th> <!-- Added "Duration" column -->                 
-                    <th colspan="4">Oct-24</th>
-                    <th colspan="4">Nov-24</th>
-                    <th colspan="4">Dec-24</th>
-                    <th colspan="4">Jan-25</th>
-                    <th colspan="4">Feb-25</th>
-                    <th colspan="4">Mar-25</th>
-                    <th colspan="4">Apr-25</th>
-                    <th colspan="4">May-25</th>
-                    <th colspan="4">Jun-25</th>
-                    <th colspan="4">Jul-25</th>
-                    <th colspan="4">Aug-25</th>
-                    <th colspan="4">Sep-25</th>
-                    <th colspan="4">Oct-25</th>
-                    <th colspan="4">Nov-25</th>
-                    <th colspan="4">Dec-25</th>
-                    <th colspan="4">Jan-26</th>
-                    <th colspan="4">Feb-26</th>
-                    <th colspan="4">Mar-26</th>
-                    <th colspan="4">Arl-26</th>
-                    <th colspan="4">May-26</th>
-                   
-                    
-                   
-                </tr>
-                <tr id="headerRow2">
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th> <!-- Empty "Duration" header for week rows -->
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                    
-                    
-                    
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <button id="addRow">Add Row</button>
-        <button id="saveData">Save Data</button>
-        <button id="addColumn">Add Column</button> <!-- Button to add columns dynamically -->
-    </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            let monthCounter = 3; // Start after the initial 3 months (Oct-Dec 24)
+<h1>📋 Project Task Schedule</h1>
 
-            // Load data from localStorage
-            if (localStorage.getItem('tableData')) {
-                $('#taskTable tbody').html(localStorage.getItem('tableData'));
-            }
+<!-- Control Buttons -->
+<button id="toggleMode">🌗 Toggle Dark Mode</button>
+<button id="lockUnlock">🔒 Lock</button>
 
-            // Add row functionality
-            $('#addRow').click(function() {
-                let newRow = `<tr>
-                                <td><input type="text" placeholder="Task Name"></td>
-                                <td><input type="text" placeholder="Project Leader"></td>
-                                <td><input type="date" class="startDate"></td>
-                                <td><input type="date" class="endDate"></td>
-                                <td><input type="text" placeholder="Duration"></td>`; // Duration column added
+<!-- Forms -->
+<form id="scheduleForm">
+  <input type="text" id="projectName" placeholder="Project Name" required>
+  <input type="text" id="place" placeholder="Place" required>
+  <button type="submit">Save Project</button>
+</form>
 
-                $('#headerRow2 th').each(function(index) {
-                    if (index >= 5) { // Skip the first 5 columns (Task Name, Leader, Start Date, End Date, Duration)
-                        newRow += `<td><textarea style="height: 20px;  width: 30px;" placeholder=""></textarea></td>`;
-                    }
-                });
+<table id="projectsTable">
+  <thead><tr><th>Project Name</th><th>Place</th><th>Action</th></tr></thead>
+  <tbody></tbody>
+</table>
 
-                newRow += `<td><button class="deleteRow">Delete</button></td></tr>`;
-                $('#taskTable tbody').append(newRow);
-            });
+<form id="approvalForm">
+  <input type="text" id="approval" placeholder="Approval" required>
+  <input type="text" id="confirmation" placeholder="Confirmation" required>
+  <input type="text" id="createdBy" placeholder="Created By" required>
+  <button type="submit">Add</button>
+</form>
 
-            // Save data to localStorage
-            $('#saveData').click(function() {
-                const tableData = $('#taskTable tbody').html();
-                localStorage.setItem('tableData', tableData);
-                alert("Data saved!");
-            });
+<table id="approvalTable">
+  <thead><tr><th>Approval</th><th>Confirmation</th><th>Created By</th><th>Actions</th></tr></thead>
+  <tbody></tbody>
+</table>
 
-            // Delete row functionality
-            $(document).on('click', '.deleteRow', function() {
-                $(this).closest('tr').remove();
-            });
+<!-- Tools -->
+<div class="colorPickerContainer">
+  <label for="cellColorPicker">Select Color:</label>
+  <input type="color" id="cellColorPicker" value="#ffffff" />
+</div>
 
-            // Add column functionality
-            $('#addColumn').click(function() {
-                monthCounter++;
-                let newMonth = `Month ${monthCounter}`;
+<button id="addRow">➕ Add Task Row</button>
+<button id="saveData">💾 Save Data</button>
+<button id="exportExcel">📥 Export to Excel</button>
+<button id="printPage">🖨️ Print Clean Table</button>
 
-                // Add new month header with 4 weeks
-                $('#headerRow1').append(`<th colspan="100">${newMonth}</th>`);
-                $('#headerRow2').append(`
-                    <th>Week 1</th>
-                    <th>Week 2</th>
-                    <th>Week 3</th>
-                    <th>Week 4</th>
-                `);
+<!-- Task Table -->
+<table id="taskTable">
+  <thead id="taskTableHead"></thead>
+  <tbody></tbody>
+</table>
 
-                // Append new columns (4 new week cells) to each row
-                $('#taskTable tbody tr').each(function() {
-                    $(this).append(`
-                        <td><textarea style="height: 5px; width" placeholder=""></textarea></td>
-                        <td><textarea style="height: 5px;" placeholder=""></textarea></td>
-                        <td><textarea style="height: 5px;" placeholder=""></textarea></td>
-                        <td><textarea style="height: 5px;" placeholder=""></textarea></td>
-                         <td><textarea style="height: 5px;" placeholder=""></textarea></td>
-                    `);
-                });
-            });
+<script>
+$(document).ready(function () {
+  const months = ["Jun-25", "Jul-25", "Aug-25", "Sep-25", "Oct-25", "Nov-25", "Dec-25",
+    "Jan-26", "Feb-26", "Mar-26", "Apr-26", "May-26", "Jun-26", "Jul-26",
+    "Aug-26", "Sep-26", "Oct-26", "Nov-26", "Dec-26", "Jan-27"];
 
-            // Update duration when start and end dates change
-            $(document).on('change', '.startDate, .endDate', function() {
-                let $row = $(this).closest('tr');
-                let startDate = $row.find('.startDate').val();
-                let endDate = $row.find('.endDate').val();
+  // Dynamic Header
+  $('#taskTableHead').append(
+    `<tr><th>Task Name</th><th>Leader</th><th>Start</th><th>End</th><th>Duration</th>${
+      months.map(m => `<th colspan="4">${m}</th>`).join('')
+    }<th>Action</th></tr>
+     <tr><th colspan="5"></th>${
+      Array(months.length * 4).fill().map((_, i) => `<th>W${(i % 4) + 1}</th>`).join('')
+    }<th></th></tr>`
+  );
 
-                if (startDate && endDate) {
-                    let start = new Date(startDate);
-                    let end = new Date(endDate);
-                    let duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24)); // Calculate duration in days
+  // Restore Data
+  if (localStorage.getItem('projectScheduleData')) {
+    const data = JSON.parse(localStorage.getItem('projectScheduleData'));
+    $('#taskTable tbody').html(data.taskTable || '');
+    $('#projectsTable tbody').html(data.projectTable || '');
+    $('#approvalTable tbody').html(data.approvalTable || '');
+  }
 
-                    if (duration >= 0) {
-                        $row.find('.duration').text(duration);
-                    } else {
-                        $row.find('.duration').text('Invalid');
-                    }
-                }
-            });
-            
-        });
+  // Add Row
+  $('#addRow').click(() => {
+    let row = `<tr>
+      <td><input type="text" placeholder="Task"/></td>
+      <td><input type="text" placeholder="Leader"/></td>
+      <td><input type="date" class="startDate"/></td>
+      <td><input type="date" class="endDate"/></td>
+      <td><input type="text" class="duration" readonly /></td>`;
+    for (let i = 0; i < months.length * 4; i++) {
+      row += `<td><textarea></textarea></td>`;
+    }
+    row += `<td><button class="deleteRow">Delete</button></td></tr>`;
+    $('#taskTable tbody').append(row);
+  });
 
+  // Auto Duration
+  $(document).on('input change', '.startDate, .endDate', function () {
+    const row = $(this).closest('tr');
+    const start = new Date(row.find('.startDate').val());
+    const end = new Date(row.find('.endDate').val());
+    if (!isNaN(start) && !isNaN(end)) {
+      const duration = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      row.find('.duration').val(duration >= 0 ? duration : '');
+    }
+  });
 
-
-
-
-
-       $(document).ready(function() {
-    const $scheduleForm = $('#scheduleForm');
-    const $projectsTableBody = $('#projectsTable tbody');
-
-    // Load saved data from localStorage
-    loadData();
-
-    // Handle form submission
-    $scheduleForm.on('submit', function(event) {
-        event.preventDefault();
-
-        const projectName = $('#projectName').val();
-        const place = $('#place').val();
-
-        // Add the new project to the table
-        const newRow = $(`
-            <tr>
-                <td>${projectName}</td>
-                <td>${place}</td>
-                <td><button class="delete-btn">Delete</button></td>
-            </tr>
-        `);
-        $projectsTableBody.append(newRow);
-
-        // Clear the form fields
-        $scheduleForm[0].reset();
-
-        // Add delete functionality to the new row
-        newRow.find('.delete-btn').on('click', function() {
-            $(this).closest('tr').remove();
-            saveData(); // Save the updated data
-        });
-
-        // Save the updated data to localStorage
-        saveData();
+  // Save Data
+  function getCleanTableHtml(selector) {
+    let html = '';
+    $(`${selector} tbody tr`).each(function () {
+      const cells = $(this).find('td');
+      const hasData = cells.toArray().some(td => {
+        const val = $(td).find('input, textarea').val() || $(td).text();
+        return val.trim() !== '';
+      });
+      if (hasData) {
+        html += '<tr>' + cells.toArray().map(td => {
+          const el = $(td).find('input, textarea');
+          return `<td>${el.length ? el.val() : $(td).text()}</td>`;
+        }).join('') + '</tr>';
+      }
     });
+    return html;
+  }
 
-   // Function to save data to localStorage
-    function saveData() {
-        let projects = [];
-        $projectsTableBody.find('tr').each(function() {
-            const projectName = $(this).find('td:nth-child(1)').text();
-            const place = $(this).find('td:nth-child(2)').text();
-            projects.push(`${projectName}|${place}`);
+  $('#saveData').click(() => {
+    const data = {
+      taskTable: getCleanTableHtml('#taskTable'),
+      projectTable: getCleanTableHtml('#projectsTable'),
+      approvalTable: getCleanTableHtml('#approvalTable')
+    };
+    localStorage.setItem('projectScheduleData', JSON.stringify(data));
+    alert("✅ Clean data saved.");
+  });
+
+  // Excel Export
+  $('#exportExcel').click(() => {
+    const wb = XLSX.utils.book_new();
+    function sheetData(tableId) {
+      const rows = [];
+      $(`${tableId} tbody tr`).each(function () {
+        const row = [];
+        $(this).find('td').each(function () {
+          const el = $(this).find('input, textarea');
+          row.push(el.length ? el.val()?.trim() : $(this).text()?.trim());
         });
-
-        localStorage.setItem('projects', projects.join(';'));  // Store as a semicolon-separated string
+        if (row.some(cell => cell)) rows.push(row);
+      });
+      return rows.length ? XLSX.utils.aoa_to_sheet(rows) : null;
     }
 
-    // Function to load data from localStorage
-    function loadData() {
-        const savedProjects = localStorage.getItem('projects');
+    [['#projectsTable', 'Projects'], ['#approvalTable', 'Approvals'], ['#taskTable', 'Tasks']]
+      .forEach(([id, name]) => {
+        const ws = sheetData(id);
+        if (ws) XLSX.utils.book_append_sheet(wb, ws, name);
+      });
 
-        if (savedProjects) {
-            const projectsArray = savedProjects.split(';');  // Split the saved string back into individual project data
+    XLSX.writeFile(wb, "Project_Task_Schedule_Clean.xlsx");
+  });
 
-            projectsArray.forEach(projectData => {
-                const [projectName, place] = projectData.split('|');
-                
-                const newRow = $(`
-                    <tr>
-                        <td>${projectName}</td>
-                        <td>${place}</td>
-                        <td><button class="delete-btn">Delete</button></td>
-                    </tr>
-                `);
-                $projectsTableBody.append(newRow);
+  // Print Only Clean Table
+  $('#printPage').click(() => {
+    const printWindow = window.open('', '_blank');
+    const tableHtml = $('#taskTable')[0].outerHTML;
 
-                // Add delete functionality to the loaded row
-                newRow.find('.delete-btn').on('click', function() {
-                    $(this).closest('tr').remove();
-                    saveData(); // Save the updated data
-                });
-            });
-        }
+    const style = `
+      <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 12px; }
+        th { background-color: #264653; color: white; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+      </style>
+    `;
+
+    printWindow.document.write(`<html><head><title>Task Table Print</title>${style}</head><body>${tableHtml}</body></html>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  });
+
+  // Color Picker
+  let selectedCell = null;
+  $(document).on('click', '#taskTable td', function () {
+    selectedCell = $(this);
+  });
+  $('#cellColorPicker').on('input', function () {
+    if (selectedCell) selectedCell.css('background-color', $(this).val());
+  });
+
+  // Dark Mode Toggle
+  $('#toggleMode').click(() => {
+    $('body').toggleClass('dark-mode');
+  });
+
+  // Form Submit
+  $('#scheduleForm').submit(e => {
+    e.preventDefault();
+    $('#projectsTable tbody').append(
+      `<tr><td>${$('#projectName').val()}</td><td>${$('#place').val()}</td><td><button class="deleteBtn">Delete</button></td></tr>`
+    );
+    $('#projectName, #place').val('');
+  });
+
+  $('#approvalForm').submit(e => {
+    e.preventDefault();
+    $('#approvalTable tbody').append(
+      `<tr><td>${$('#approval').val()}</td><td>${$('#confirmation').val()}</td><td>${$('#createdBy').val()}</td><td><button class="delete">Delete</button></td></tr>`
+    );
+    $('#approvalForm input').val('');
+  });
+
+  $(document).on('click', '.deleteRow, .delete, .deleteBtn', function () {
+    $(this).closest('tr').remove();
+  });
+
+  // Lock / Unlock with triple click
+  let unlockCount = 0;
+  let locked = false;
+  $('#lockUnlock').click(function () {
+    if (!locked) {
+      $('input, textarea, .deleteRow, .deleteBtn, .delete').prop('disabled', true);
+      $(this).text("🔓 Unlock");
+      locked = true;
+      unlockCount = 0;
+    } else {
+      unlockCount++;
+      if (unlockCount >= 3) {
+        $('input, textarea, .deleteRow, .deleteBtn, .delete').prop('disabled', false);
+        $(this).text("🔒 Lock");
+        locked = false;
+        unlockCount = 0;
+      } else {
+        alert(`⚠️ Click ${3 - unlockCount} more times to unlock.`);
+      }
     }
+  });
 });
+</script>
 
-        
-    </script>
+</body>
+</html>      
+</script>
 </body>
 </html>
